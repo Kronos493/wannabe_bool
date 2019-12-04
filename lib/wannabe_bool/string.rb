@@ -1,14 +1,16 @@
 # frozen_string_literal: true
+
 module WannabeBool::String
-  TRUES  = %W{t true on y yes 1}.freeze
-  FALSES = %W{f false off n no 0}.freeze
+  TRUES  = %W{t true on y yes 1}.each_with_object(Hash.new(false)) do |k, hash| 
+    hash[k] = true
+    hash[k.upcase] = true
+    hash[k.downcase] = true
+    hash[k.camelize] = true
+  end.freeze
 
   def to_b
-    value = self.strip.downcase
-    return true  if TRUES.include?(value)
-    return false if FALSES.include?(value)
-
-    WannabeBool.invalid_value_behaviour.call
+    value = self.strip
+    TRUES[value]
   end
 
   include WannabeBool::Aliasing
